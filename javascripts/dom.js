@@ -1,6 +1,6 @@
 "use strict";
 
-var outputDiv = $('#dinosaur');
+const outputDiv = $('#dinosaur');
 
 const domString = (dinosaur) => {
 	var dinoString = "";
