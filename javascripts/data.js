@@ -4,30 +4,6 @@ const dom = require('./dom');
 
 let dinosaurs = [];
 
-// var dinoGetter = function(){
-// 	$.ajax("./db/dinosaurs.json").done(function(data1){
-// 		console.log("data1", data1);
-// 		data1.dinosaurs1.forEach(function(dino){
-// 			dinosaurs.push(dino);
-// 		});
-// 		console.log("dinosaurs after foreach", dinosaurs);
-// 		$.ajax("./db/dinosaurs2.json").done(function(data2){
-// 			console.log("data2", data2);
-// 			data2. dinosaurs2.forEach(function(dino){
-// 				dinosaurs.push(dino);
-// 			});
-// 			console.log("dinosaurs after foreach", dinosaurs);
-// 			$.ajax("./db/dinosaurs3.json").done(function(data3){
-// 			console.log("data2", data3);
-// 			data3. dinosaurs3.forEach(function(dino){
-// 				dinosaurs.push(dino);
-// 			});
-// 			console.log("dinosaurs after foreach", dinosaurs);
-// 		});
-// 	});
-// });
-// };
-
 const firstDinosaurJSON = () => {
 	return new Promise((resolve, reject) => {
 		$.ajax('./db/dinosaurs.json').done((data1) => {
@@ -57,6 +33,81 @@ const thirdDinosaurJSON = () => {
 		});
 	});
 };
+
+const allTheCats = () => {
+	return new Promise((resolve, reject) => {
+		$.ajax('./db/cats.json').done((data) => {
+			resolve(data.cats);
+		}).fail((error) => {
+			reject(error);
+		});
+	});
+};
+
+//This is a special case, so the below works for this
+const dinoGetter = () => {
+	Promise.all([firstDinosaurJSON(), secondDinosaurJSON(), thirdDinosaurJSON()]).then((results) => {
+		allTheCats().then((cats) => {
+			results.forEach((result) => {
+				result.forEach((dino) => {
+					dino.snacks = [];
+					dino.catIds.forEach((catId) => {
+						cats.forEach((cat) => {
+							if(cat.id === catId){
+								dino.snacks.push(cat);
+							}
+						});
+					});
+					dinosaurs.push(dino);
+				});
+			});
+			makeDinos();
+		});
+	}).catch((error) => {
+		console.log("error from Promise.all", error);
+	});
+};
+
+const makeDinos = () => {
+	dinosaurs.forEach((dino) => {
+		dom(dino);
+	});
+};
+
+const initializer = () => {
+	dinoGetter();
+};
+
+const getDinosaurs = () => {
+	return dinosaurs;
+};
+
+module.exports = {initializer: initializer, getDinosaurs: getDinosaurs};
+
+//this is a pyramid of doom- hard to read- do not use
+// var dinoGetter = function(){
+// 	$.ajax("./db/dinosaurs.json").done(function(data1){
+// 		console.log("data1", data1);
+// 		data1.dinosaurs1.forEach(function(dino){
+// 			dinosaurs.push(dino);
+// 		});
+// 		console.log("dinosaurs after foreach", dinosaurs);
+// 		$.ajax("./db/dinosaurs2.json").done(function(data2){
+// 			console.log("data2", data2);
+// 			data2. dinosaurs2.forEach(function(dino){
+// 				dinosaurs.push(dino);
+// 			});
+// 			console.log("dinosaurs after foreach", dinosaurs);
+// 			$.ajax("./db/dinosaurs3.json").done(function(data3){
+// 			console.log("data2", data3);
+// 			data3. dinosaurs3.forEach(function(dino){
+// 				dinosaurs.push(dino);
+// 			});
+// 			console.log("dinosaurs after foreach", dinosaurs);
+// 		});
+// 	});
+// });
+// };
 
 //PROMISE WORKS- promise pyramid of doom
 // var dinoGetter = function(){
@@ -101,33 +152,4 @@ const thirdDinosaurJSON = () => {
 // 	});
 // };
 
-//This is a special case, so the below works for this
-const dinoGetter = () => {
-	Promise.all([firstDinosaurJSON(), secondDinosaurJSON(), thirdDinosaurJSON()]).then((results) => {
-		console.log("results from promise.all", results);
-		results.forEach((result) => {
-			result.forEach((dino) => {
-				dinosaurs.push(dino);
-			});
-		});
-		makeDinos();
-	}).catch((error) => {
-		console.log("error from Promise.all", error);
-	});
-};
 
-const makeDinos = () => {
-	dinosaurs.forEach((dino) => {
-		dom(dino);
-	});
-};
-
-const initializer = () => {
-	dinoGetter();
-};
-
-const getDinosaurs = () => {
-	return dinosaurs;
-};
-
-module.exports = {initializer: initializer, getDinosaurs: getDinosaurs};
