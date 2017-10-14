@@ -131,7 +131,7 @@ module.exports = {initializer: initializer, getDinosaurs: getDinosaurs};
 // 	});
 // };
 
-//Promise- correct way- This is the correct way but there is a better way!
+// Promise- correct way- This is the correct way but there is a better way!
 // var dinoGetter = function(){
 // 	firstDinosaurJSON().then(function(results){
 // 		results.forEach(function(dino){
